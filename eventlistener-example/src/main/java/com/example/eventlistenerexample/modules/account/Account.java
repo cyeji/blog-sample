@@ -22,6 +22,9 @@ public class Account {
 
     private String phoneNumber;
 
+    /** 메세지 전송 확인 용 */
+    private boolean sentMessage;
+
 
     public static Account from(SignInForm signInForm) {
         Account account = new Account();
@@ -34,6 +37,10 @@ public class Account {
 
     public void updateAuthCode(String authCode) {
         this.authCode = authCode;
+    }
+
+    public void updateSentMessage() {
+        this.sentMessage = true;
     }
 
 }

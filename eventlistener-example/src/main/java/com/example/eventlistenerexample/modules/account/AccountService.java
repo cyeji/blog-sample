@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -26,19 +27,15 @@ public class AccountService {
      * @param signInForm
      * @return AccountDTO
      */
+    @Transactional
     public AccountDTO signIn(SignInForm signInForm) {
         log.info("start signIn process : {}", signInForm.getEmail());
 
-        String email = signInForm.getEmail();
-
-        // 등록된 이메일 확인
-        accountRepository.findByEmail(email).ifPresent(account -> {throw new RuntimeException("이미 가입된 이메일 주소가 있습니다.");});
+        applicationEventPublisher.publishEvent(new CurrentAccountEvent(signInForm.getEmail(), signInForm.getPhoneNumber()));
 
         // 저장
         Account account = Account.from(signInForm);
         accountRepository.save(account);
-
-        applicationEventPublisher.publishEvent(new CurrentAccountEvent(signInForm.getEmail(), signInForm.getPhoneNumber()));
 
 //        applicationEventPublisher.publishEvent(new AccountEvent(this, signInForm.getEmail(), signInForm.getPhoneNumber()));
 
